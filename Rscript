@@ -1,4 +1,6 @@
 library(twitteR)
+library(ggplot2)
+library(maps)
 
 consumerKey <- 'yourConsumerKey'
 consumerSecret <- 'yourConsumerSecret'
@@ -920,3 +922,14 @@ worldList <- setNames(lapply(ls(pattern = '.+Df'), function(x) get(x)), ls(patte
 worldDf <- do.call('rbind', worldList)
 
 
+=================================================================================
+
+worldmap <- map_data('world')
+base <- ggplot() + geom_polygon(data = worldmap, aes(x = long, y = lat, group=group), size = 0.1, colour = "#101032", fill ="#101032", alpha = 1)
+world <- base + theme(panel.background = element_rect(fill='#080819', colour='#080819'), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.title = element_blank())
+
+AshuraMap <- world + geom_point(data = worldDf[worldDf$missingCoord == FALSE, ], aes(x = longitude, y = latitude), size = .5, colour = 'white') + 
+     annotate('text', x = -135, y = -35, label = '"Tweeters during the first 10 days of Muharram"', colour = 'white') +
+     annotate('text', x = -173.5, y = -43, label = 'Ali Arsalan Kazmi', colour = 'white')
+
+ggsave('twitterMuharram.png', path = getwd(), , width = 2560, height = 1440, dpi = 1200)
