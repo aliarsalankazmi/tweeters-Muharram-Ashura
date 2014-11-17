@@ -1,0 +1,922 @@
+library(twitteR)
+
+consumerKey <- 'yourConsumerKey'
+consumerSecret <- 'yourConsumerSecret'
+accessToken <- 'yourAccessToken'
+accessTokenSecret <- 'yourAccessTokenSecret' 
+
+
+setup_twitter_oauth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+
+
+=================================================================================================================================================
+
+
+query1 <- '#imamhussain'
+query2 <- '#salamyahussain'
+query3 <- '#yahussain'
+query4 <- '#yahussein'
+query5 <- '#labbaikyahussain'
+query6 <- '#labbaykyahussain'
+query7 <- '#karbala'
+query8 <- '#whoishussain'
+query9 <- '#azadari'
+query10 <- '#azadaari'
+query11 <- '#ياحسين'
+query12 <- '#الحسين'
+query13 <- '#ويبقى_الحسين'
+query14 <- '#لبيك_ياحسين'
+query15 <- '#الحسين_منهج_وراية'
+query16 <- '#teamgiveback'
+
+searchTerms <- c(query1, query2, query3, query4, query5, query6, query7, query8, query9, query10, query11, query12, query13, query14, query15, query16)
+
+
+extractTweetData <- function(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets) {
+locationParams <- paste(lat, long, radius, sep = ',')
+searchResults <- lapply(searchTerms, function(x) searchTwitter(searchString = x, n = noOfTweets, geocode = locationParams, since = sinceDate))
+nonEmptyResults <- searchResults[lapply(searchResults, length) > 0]
+searchData <- lapply(nonEmptyResults, function(x) twListToDF(x))
+searchDf <- do.call('rbind', searchData)
+missingCoord <- is.na(searchDf$latitude)
+searchDf$missingCoord <- missingCoord
+missingLat <- which(missingCoord)
+missingLong <- which(missingCoord)
+newLat <- runif(length(missingLat), min = as.numeric(lat) - .5, max = as.numeric(lat) + .5)
+newLong <- runif(length(missingLong), min = as.numeric(long) - .5, max = as.numeric(long) + .5)
+searchDf$latitude[missingLat] <- newLat
+searchDf$longitude[missingLong] <- newLong
+searchDf$latitude <- as.numeric(searchDf$latitude)
+searchDf$longitude <- as.numeric(searchDf$longitude)
+searchDf$Area <- rep(areaName, times = dim(searchDf)[1])
+return(searchDf)
+}
+
+
+
+#### querying for users in UAE
+
+areaName <- 'UAE'
+lat <- '25.135414'
+long <- '55.277910'
+radius <- '100mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+uaeDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(60)
+
+
+
+#### querying for users in Najd
+
+areaName <- 'Najd'
+lat <- '24.620772'
+long <- '46.692614'
+radius <- '130mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+najdDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(60)
+
+
+
+#### querying for users in Mecca + Jeddah
+
+areaName <- 'Mecca and Jeddah'
+lat <- '21.376797'
+long <- '39.637894'
+radius <- '60mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+mjDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Medina
+
+areaName <- 'Medina'
+lat <- '24.531887'
+long <- '39.447115'
+radius <- '60mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+medDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Bahran + Qatar
+
+areaName <- 'Bahrain and Qatar'
+lat <- '25.447923'
+long <- '51.143303'
+radius <- '76mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+bqDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Punjab - Pakistan
+
+areaName <- 'Pakistan Punjab'
+lat <- '32.785345'
+long <- '72.916495'
+radius <- '180mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ppDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Sindh - Pakistan
+
+areaName <- 'Pakistan Sindh'
+lat <- '27.095747'
+long <- '66.452830'
+radius <- '275mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+spDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in India
+
+areaName <- 'India'
+lat <- '22.976511'
+long <- '82.848135'
+radius <- '750mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+inDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Afghanistan
+
+areaName <- 'Afghanistan'
+lat <- '34.902071'
+long <- '66.192863'
+radius <- '210mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+agDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for users in Central + Eastern Iran
+
+areaName <- 'Iran Central and Eastern'
+lat <- '34.757781'
+long <- '54.942864'
+radius <- '450mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 8000
+
+ciDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Western Iran
+
+areaName <- 'Iran Western'
+lat <- '38.261315'
+long <- '47.063853'
+radius <- '140mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+wiDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for users in Iraq
+
+areaName <- 'Iraq'
+lat <- '32.802803'
+long <- '43.372447'
+radius <- '240mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+iqDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Syria + Lebanon
+
+areaName <- 'Syria and Lebanon'
+lat <- '34.922794'
+long <- '37.659909'
+radius <- '180mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+slDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Egypt
+
+areaName <- 'Egypt'
+lat <- '29.984905'
+long <- '29.999687'
+radius <- '155mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+egDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Turkey
+
+areaName <- 'Turkey'
+lat <- '40.096886'
+long <- '32.130938'
+radius <- '250mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+tkDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Bangladesh
+
+areaName <- 'Bangladesh'
+lat <- '23.955610'
+long <- '90.344672'
+radius <- '140mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+bgDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Myanmar
+
+areaName <- 'Myanmar'
+lat <- '21.269908'
+long <- '95.584748'
+radius <- '310mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+mnDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Thailand
+
+areaName <- 'Thailand'
+lat <- '16.269253'
+long <- '101.159107'
+radius <- '240mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+tdDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Cambodia + Vietnam
+
+areaName <- 'Cambodia and Vietnam'
+lat <- '12.995719'
+long <- '105.817310'
+radius <- '250mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+cvDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Malaysia
+
+areaName <- 'Malaysia'
+lat <- '4.310542'
+long <- '102.052704'
+radius <- '300mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+mlDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Indonesia
+
+
+areaName <- 'Indonesia'
+lat <- '-2.459632'
+long <- '120.834423'
+radius <- '250mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+inaDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Libya
+
+areaName <- 'Libya'
+lat <- '29.803020'
+long <- '17.742378'
+radius <- '405mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+lyDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Tunisia
+
+
+areaName <- 'Tunisia'
+lat <- '35.766839'
+long <- '9.895549'
+radius <- '107mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+tnDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Algiers
+
+
+areaName <- 'Algiers'
+lat <- '35.410254'
+long <- '3.344234'
+radius <- '300mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+algDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Morocco
+
+areaName <- 'Morocco'
+lat <- '33.165346'
+long <- '-6.215652'
+radius <- '260mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+morDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Yemen
+
+areaName <- 'Yemen'
+lat <- '14.791558'
+long <- '45.171065'
+radius <- '190mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ymDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Oman
+
+
+areaName <- 'Oman'
+lat <- '21.799235'
+long <- '57.560428'
+radius <- '180mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+omDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Sudan
+
+areaName <- 'Sudan'
+lat <- '15.440187'
+long <- '30.048311'
+radius <- '500mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+sudDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Ethiopia + Somalia
+
+areaName <- 'Ethiopia and Somalia'
+lat <- '7.522886'
+long <- '40.067842'
+radius <- '540mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+esomDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Australia
+
+
+areaName <- 'Australia'
+lat <- '-24.055995'
+long <- '133.424754'
+radius <- '1350mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ausDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Spain + Portugal
+
+
+areaName <- 'Spain and Portugal'
+lat <- '40.846582'
+long <- '-4.774240'
+radius <- '340mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+sppDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in France
+
+
+areaName <- 'France'
+lat <- '47.056159'
+long <- '1.351277'
+radius <- '340mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+fraDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users in Germany
+
+
+areaName <- 'Germany'
+lat <- '50.830739'
+long <- '9.274529'
+radius <- '230mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+gerDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Belgium + Netherlands
+
+
+areaName <- 'Belgium and Netherlands'
+lat <- '51.587812'
+long <- '4.726190'
+radius <- '90mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+belnDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Poland
+
+
+areaName <- 'Poland'
+lat <- '52.561637'
+long <- '19.409562'
+radius <- '180mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+polDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users in Russia + Ukraine + Belarus + Latvia + Lithuania + Estonia
+
+
+areaName <- 'Russia, Ukraine, Belarus, Latvia, Lithuania, and Estonia'
+lat <- '55.548184'
+long <- '37.789683'
+radius <- '600mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+russDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(240)
+
+
+
+#### querying for users Lower England
+
+
+areaName <- 'England Southern'
+lat <- '52.012161'
+long <- '-2.028358'
+radius <- '170mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+lengDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users Scotland + Upper England
+
+
+areaName <- 'Scotland and Northern England'
+lat <- '56.056906'
+long <- '-4.060829'
+radius <- '125mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+scotDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users Ireland
+
+
+areaName <- 'Ireland'
+lat <- '53.616688'
+long <- '-7.868858'
+radius <- '120mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ireDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users Norway + Sweden
+
+
+areaName <- 'Norway and Sweden'
+lat <- '62.038067'
+long <- '11.511024'
+radius <- '330mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+norsDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+Sys.sleep(360)
+
+
+#### querying for users Eastern Canada
+
+
+areaName <- 'Canada Eastern'
+lat <- '58.902900'
+long <- '-115.131615'
+radius <- '815mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ecanDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+Sys.sleep(360)
+
+
+
+#### querying for users Western Canada + Western America
+
+
+areaName <- 'Canada Western and America Western'
+lat <- '43.982478'
+long <- '-80.810329'
+radius <- '880mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+canamDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for users Eastern + Central America
+
+
+areaName <- 'America Eastern and Central'
+lat <- '41.594293'
+long <- '-116.743633'
+radius <- '640mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+amrDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for Nigeria + Niger + Ghana + Cameroon
+
+
+areaName <- 'Nigeria, Niger, Ghana, and Cameroon'
+lat <- '10.411162'
+long <- '7.203110'
+radius <- '700mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+ngrcDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for Latin America
+
+
+areaName <- 'America Latin'
+lat <- '-10.902396'
+long <- '-59.363794'
+radius <- '2685mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+laamDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for Mexico
+
+
+areaName <- 'Mexico'
+lat <- '20.566560'
+long <- '-101.950889'
+radius <- '820mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+mexDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for South Africa
+
+
+areaName <- 'South Africa'
+lat <- '-19.901653'
+long <- '23.865217'
+radius <- '1052mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+safDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for Japan, Korea
+
+
+areaName <- 'Japan and Korea'
+lat <- '34.704204'
+long <- '135.465304'
+radius <- '620mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+jakDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+Sys.sleep(360)
+
+
+
+
+#### querying for Philippines
+
+
+areaName <- ' Philippines'
+lat <- '14.879571'
+long <- '120.897435'
+radius <- '680mi'
+sinceDate <- '2014-10-24'
+noOfTweets <- 4000
+
+philDf <- extractTweetData(areaName, lat, long, radius, sinceDate, searchTerms, noOfTweets)
+
+
+
+=================================================================================
+=================================================================================
+
+
+worldList <- setNames(lapply(ls(pattern = '.+Df'), function(x) get(x)), ls(pattern = '.+Df')) 
+worldDf <- do.call('rbind', worldList)
+
+
